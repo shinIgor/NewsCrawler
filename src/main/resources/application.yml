@@ -21,22 +21,25 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-logging:
-  level:
-    root: info
-
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: user_test
-    password: 0000
-    connection-test-query: SELECT 1
-    minimum-idle: 5
-    maximum-pool-size: 5
-    url: jdbc:mysql://192.168.219.116:3306
+    news:
+      name: NEWS-CRAWLER
+#      driver-class-name: software.aws.rds.jdbc.mysql.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url :
+      username:
+      password:
+      connection-test-query: SELECT 1
+      minimum-idle: 5
+      maximum-pool-size: 5
+
   data:
     redis:
       host: localhost
       port: 6379
       database: 0
-
 debug: false
+logging:
+  level:
+    root: info
+
