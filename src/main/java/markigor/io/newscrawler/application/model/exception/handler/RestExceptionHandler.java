@@ -1,11 +1,11 @@
-package markigor.io.newscrawler.application.exception.handler;
+package markigor.io.newscrawler.application.model.exception.handler;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import markigor.io.newscrawler.application.exception.BaseError;
-import markigor.io.newscrawler.application.exception.CommonErrorMessage;
-import markigor.io.newscrawler.application.exception.CommonException;
+import markigor.io.newscrawler.application.model.exception.BaseError;
+import markigor.io.newscrawler.application.model.exception.CommonErrorMessage;
+import markigor.io.newscrawler.application.model.exception.CommonException;
 import markigor.io.newscrawler.application.model.transfer.Response.BaseResponse;
 import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;

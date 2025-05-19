@@ -2,8 +2,8 @@ package markigor.io.newscrawler.application.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import markigor.io.newscrawler.application.exception.CommonErrorMessage;
-import markigor.io.newscrawler.application.exception.CommonException;
+import markigor.io.newscrawler.application.model.exception.CommonErrorMessage;
+import markigor.io.newscrawler.application.model.exception.CommonException;
 
 import java.util.Optional;
 

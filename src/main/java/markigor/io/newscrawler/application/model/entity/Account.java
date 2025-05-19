@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import markigor.io.newscrawler.application.model.type.AccountRoleType;
 
 import java.time.LocalDateTime;
 
@@ -29,9 +30,14 @@ public class Account extends BaseEntity {
     @Size(max = 64)
     @Column(name = "user_password", length = 64)
     String userPassword;
+
     @Size(max = 10)
     @Column(name = "user_name", length = 10)
     String userName;
+
+    @Convert(converter = AccountRoleType.class)
+    @Column(name = "account_role")
+    AccountRoleType accountRole;
 
     @Column(name = "last_processed_at", nullable = false)
     LocalDateTime lastProcessedAt;

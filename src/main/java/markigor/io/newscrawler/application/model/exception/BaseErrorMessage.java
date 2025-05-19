@@ -1,4 +1,4 @@
-package markigor.io.newscrawler.application.exception;
+package markigor.io.newscrawler.application.model.exception;
 
 import org.springframework.http.HttpStatus;
 

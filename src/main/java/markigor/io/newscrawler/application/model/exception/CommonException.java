@@ -1,4 +1,4 @@
-package markigor.io.newscrawler.application.exception;
+package markigor.io.newscrawler.application.model.exception;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import markigor.io.newscrawler.application.exception.BaseError;
+import markigor.io.newscrawler.application.model.exception.BaseError;
 
 @Data
 @AllArgsConstructor(staticName = "of")
