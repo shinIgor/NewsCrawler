@@ -1,5 +1,6 @@
 package markigor.io.newscrawler.application.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "user_service_ut")
-public class UserService extends BaseEntity{
+public class UserService extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_service_ut_id")
@@ -24,5 +25,10 @@ public class UserService extends BaseEntity{
 
     @Column(name = "crawler_mt_id")
     Long crawlerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "crawler_mt_id", referencedColumnName = "crawler_mt_id", insertable = false, updatable = false)
+    Crawler crawlerData;
 
 }

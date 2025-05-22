@@ -5,8 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import markigor.io.newscrawler.application.model.entity.convert.JsonToMapConverter;
 
-import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -19,22 +20,20 @@ import java.time.LocalDateTime;
 public class CrawlerApi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "crawler_mt_id")
+    @Column(name = "crawler_api_mt_id")
     Long Id;
 
-    @Column(name = "crawler_api_mt_id")
-    Long crawlerApiId;
+    @Size(max = 20)
+    @Column(name = "site_name", length = 20)
+    String siteName;
 
-    @Size(max = 50)
-    @Column(name = "key_word", length = 50)
-    String keyWord;
+    @Column(name = "url")
+    String url;
 
-    @Column(name = "duration")
-    Long duration;
+    @Convert(converter = JsonToMapConverter.class)
+    @Column(name = "header", columnDefinition = "JSON")
+    Map<String, Object> header;
 
-    @Column(name = "is_scrap")
-    Boolean isScrap;
-
-    @Column(name = "last_processed_at", nullable = false)
-    LocalDateTime lastProcessedAt;
+    @Column(name = "body")
+    String body;
 }

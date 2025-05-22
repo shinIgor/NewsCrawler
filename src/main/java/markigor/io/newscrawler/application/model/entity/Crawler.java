@@ -1,5 +1,6 @@
 package markigor.io.newscrawler.application.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -7,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,6 +37,7 @@ public class Crawler extends BaseEntity {
     @Column(name = "is_scrap")
     Boolean isScrap;
 
-    @Column(name = "last_processed_at", nullable = false)
-    LocalDateTime lastProcessedAt;
+    @OneToMany(mappedBy = "crawlerData", fetch = FetchType.LAZY)
+    @JsonBackReference
+    List<UserService> userService;
 }

@@ -23,5 +23,5 @@ public class BaseEntity {
     LocalDateTime updatedAt;
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
-    LocalDateTime createdAT;
+    LocalDateTime createdAt;
 }
