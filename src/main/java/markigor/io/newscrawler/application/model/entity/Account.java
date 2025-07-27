@@ -46,8 +46,8 @@ public class Account extends BaseEntity {
     @Column(name = "user_name", length = 10)
     String userName;
 
-    @Convert(converter = AccountRoleTypeConverter.class)
     @Column(name = "account_role")
+    @Convert(converter = AccountRoleTypeConverter.class)
     AccountRoleType accountRole;
 
     @Column(name = "last_processed_at", nullable = false)

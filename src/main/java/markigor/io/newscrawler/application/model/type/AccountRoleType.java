@@ -1,12 +1,12 @@
 package markigor.io.newscrawler.application.model.type;
 
-import lombok.Getter;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
+import lombok.Getter;
 
 @Getter
+
 public enum AccountRoleType {
     UNKNOWN("unknown", 0),
     USER("user", 1),
@@ -24,9 +24,9 @@ public enum AccountRoleType {
 
     private static AccountRoleType find(Predicate<AccountRoleType> predicate) {
         return Arrays.stream(values())
-                .filter(predicate)
-                .findAny()
-                .orElse(null);
+            .filter(predicate)
+            .findAny()
+            .orElse(null);
     }
 
     public static AccountRoleType from(String role) {
