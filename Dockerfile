@@ -21,8 +21,7 @@ WORKDIR /app
 
 # 빌드 스테이지에서 생성된 최종 JAR 파일을 복사
 # your-application-name.jar을 실제 프로젝트의 JAR 파일 이름으로 변경해주세요.
-COPY --from=build /app/build/libs/your-application-name.jar app.jar
-
+COPY --from=build /app/build/libs/NewsCrawler-1.0.0-SNAPSHOT.jar app.jar
 # 애플리케이션이 사용할 포트 노출
 EXPOSE 18080
 
