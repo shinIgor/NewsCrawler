@@ -1,9 +1,13 @@
 package markigor.io.newscrawler.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import markigor.io.newscrawler.application.model.transfer.Response.CrawlerDataResponse;
-
 import java.util.List;
+import markigor.io.newscrawler.application.model.transfer.Request.CrawlerModifyRequest;
+import markigor.io.newscrawler.application.model.transfer.Request.CrawlerSiteCreateRequest;
+import markigor.io.newscrawler.application.model.transfer.Request.CrawlerSiteModifyRequest;
+import markigor.io.newscrawler.application.model.transfer.Response.CrawlerApiCreateResponse;
+import markigor.io.newscrawler.application.model.transfer.Response.CrawlerApiModifyResponse;
+import markigor.io.newscrawler.application.model.transfer.Response.CrawlerDataResponse;
 
 public interface CrawlerService {
     //Note
@@ -12,19 +16,25 @@ public interface CrawlerService {
     // 3. PutMethod : 1. 뉴스 키워드 변경. 2. 뉴스 사이트 변경...?!
     // 4. DeleteMethod : 1. 뉴스 키워드 삭제. 2. 뉴스 사이트 삭제
 
-
+    //Note 유저용 Crawler Setting Service
     List<CrawlerDataResponse> getCrawlerSettings(HttpServletRequest request);
 
-    void createCrawlerKeyword(HttpServletRequest request);
 
-    void createCrawlerApi(HttpServletRequest request);
+    //Note
+    // Crawler Keyword 변경은 관리자 권한..?!
+    // 유저는 UserService 로만 관리
+    void modifyCrawlerKeyword(HttpServletRequest request, CrawlerModifyRequest param);
 
-    void updateCrawlerKeyword(HttpServletRequest request);
+    void removeCrawlerKeyword(HttpServletRequest request, Long crawlerId);
 
-    void updateCrawlerApi(HttpServletRequest request);
+    // Note Crawler Site 설정 Service
 
-    void removeCrawlerKeyword(HttpServletRequest request);
+    CrawlerApiCreateResponse createCrawlerSite(HttpServletRequest request,
+        CrawlerSiteCreateRequest param);
 
-    void removeCrawlerApi(HttpServletRequest request);
+    CrawlerApiModifyResponse modifyCrawlerSite(HttpServletRequest request,
+        CrawlerSiteModifyRequest param);
+
+    void removeCrawlerSite(HttpServletRequest request, Long crawlerApiId);
 
 }

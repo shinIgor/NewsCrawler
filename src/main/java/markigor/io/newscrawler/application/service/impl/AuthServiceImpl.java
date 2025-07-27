@@ -2,6 +2,8 @@ package markigor.io.newscrawler.application.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +26,11 @@ import markigor.io.newscrawler.application.util.HttpHeaderUtil;
 import markigor.io.newscrawler.application.util.ValidCheck;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private final AccountRepository accountRepository;
     private final AccessTokenService accessTokenService;
     private final RedisCacheService redisCacheService;
@@ -49,20 +49,21 @@ public class AuthServiceImpl implements AuthService {
         String hashPassword = BCryptUtil.encodePassword(param.getPassword());
 
         Account result = accountRepository.save(
-                Account.builder()
-                        .userId(param.getId())
-                        .userPassword(hashPassword)
-                        .userName(param.getName())
-                        .accountRole(AccountRoleType.USER)
-                        .lastProcessedAt(LocalDateTime.now())
-                        .build()
+            Account.builder()
+                .userId(param.getId())
+                .userPassword(hashPassword)
+                .userName(param.getName())
+                .accountRole(AccountRoleType.USER)
+                .lastProcessedAt(LocalDateTime.now())
+                .build()
         );
         return RegisterAccountResponse.of(result);
     }
 
     @Override
     @ValidCheck
-    public TokenResponse loginAccount(@NonNull @ValidCheck HttpServletRequest request, @ValidCheck @NotEmpty LoginAccountRequest param) {
+    public TokenResponse loginAccount(@NonNull @ValidCheck HttpServletRequest request,
+        @ValidCheck @NotEmpty LoginAccountRequest param) {
         Account account = accountRepository.getAccount(param.getUserId());
 
         //Note User null check
@@ -88,14 +89,17 @@ public class AuthServiceImpl implements AuthService {
     @ValidCheck
     public void logout(HttpServletRequest request) {
         String accessToken = HttpHeaderUtil.getExtractBearerToken(request);
-        SessionTokenDto sessionTokenDto = redisCacheService.getValue(RedisCacheKeyDefine.getAccessTokenKey(accessToken), SessionTokenDto.class);
+        SessionTokenDto sessionTokenDto = redisCacheService.getValue(
+            RedisCacheKeyDefine.getAccessTokenKey(accessToken), SessionTokenDto.class);
 
         if (sessionTokenDto == null) {
             log.error("Not found access token");
             throw new CommonException(CommonErrorMessage.INVALID_ACCESS_TOKEN);
         }
-        redisCacheService.removeValue(RedisCacheKeyDefine.getAccessTokenKey(sessionTokenDto.getAccessToken().getValue()));
-        redisCacheService.removeValue(RedisCacheKeyDefine.getRefreshTokenKey(sessionTokenDto.getRefreshToken().getValue()));
+        redisCacheService.removeValue(
+            RedisCacheKeyDefine.getAccessTokenKey(sessionTokenDto.getAccessToken().getValue()));
+        redisCacheService.removeValue(
+            RedisCacheKeyDefine.getRefreshTokenKey(sessionTokenDto.getRefreshToken().getValue()));
     }
 
     @Override

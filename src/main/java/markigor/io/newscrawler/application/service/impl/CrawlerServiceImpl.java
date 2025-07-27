@@ -1,33 +1,45 @@
 package markigor.io.newscrawler.application.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import markigor.io.newscrawler.application.model.define.RedisCacheKeyDefine;
 import markigor.io.newscrawler.application.model.entity.Account;
+import markigor.io.newscrawler.application.model.entity.Crawler;
+import markigor.io.newscrawler.application.model.entity.CrawlerSite;
+import markigor.io.newscrawler.application.model.entity.CrawlerSiteLog;
 import markigor.io.newscrawler.application.model.exception.CommonErrorMessage;
 import markigor.io.newscrawler.application.model.exception.CommonException;
-import markigor.io.newscrawler.application.model.repository.*;
-import markigor.io.newscrawler.application.model.transfer.Dto.SessionTokenDto;
+import markigor.io.newscrawler.application.model.repository.AccountRepository;
+import markigor.io.newscrawler.application.model.repository.CrawlerApiLogRepository;
+import markigor.io.newscrawler.application.model.repository.CrawlerApiRepository;
+import markigor.io.newscrawler.application.model.repository.CrawlerLogRepository;
+import markigor.io.newscrawler.application.model.repository.CrawlerRepository;
+import markigor.io.newscrawler.application.model.repository.UserServiceRepository;
+import markigor.io.newscrawler.application.model.transfer.Request.CrawlerModifyRequest;
+import markigor.io.newscrawler.application.model.transfer.Request.CrawlerSiteCreateRequest;
+import markigor.io.newscrawler.application.model.transfer.Request.CrawlerSiteModifyRequest;
+import markigor.io.newscrawler.application.model.transfer.Response.CrawlerApiCreateResponse;
+import markigor.io.newscrawler.application.model.transfer.Response.CrawlerApiModifyResponse;
 import markigor.io.newscrawler.application.model.transfer.Response.CrawlerDataResponse;
-import markigor.io.newscrawler.application.model.type.AdditionalInformation;
+import markigor.io.newscrawler.application.model.type.AccountRoleType;
 import markigor.io.newscrawler.application.service.CrawlerService;
 import markigor.io.newscrawler.application.service.RedisCacheService;
-import markigor.io.newscrawler.application.util.HttpHeaderUtil;
+import markigor.io.newscrawler.application.util.SessionUtil;
 import markigor.io.newscrawler.application.util.ValidCheck;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CrawlerServiceImpl implements CrawlerService {
+
     private final RedisCacheService redisCacheService;
     private final CrawlerRepository crawlerRepository;
     private final CrawlerApiRepository crawlerApiRepository;
+    private final UserServiceRepository userServiceRepository;
     private final AccountRepository accountRepository;
 
     private final CrawlerLogRepository crawlerLogRepository;
@@ -36,68 +48,161 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Override
     @ValidCheck
     public List<CrawlerDataResponse> getCrawlerSettings(HttpServletRequest request) {
-        Account account = getAccountBySession(request);
+        // Note Session 체크
+        Account account = SessionUtil.getAccountBySession(request);
 
-        List<CrawlerDataResponse> crawlerDataList = crawlerRepository.getCrawlerList(account.getId())
-                .stream()
-                .map(CrawlerDataResponse::of)
-                .toList();
+        List<CrawlerDataResponse> crawlerDataList = crawlerRepository.getCrawlerList(
+                account.getId())
+            .stream()
+            .map(CrawlerDataResponse::of)
+            .toList();
 
         return crawlerDataList;
     }
 
-    @Override
-    @ValidCheck
-    public void createCrawlerKeyword(HttpServletRequest request) {
-
-    }
 
     @Override
     @ValidCheck
-    public void createCrawlerApi(HttpServletRequest request) {
+    public CrawlerApiCreateResponse createCrawlerSite(HttpServletRequest request,
+        CrawlerSiteCreateRequest param) {
+        // Note Session 체크
+        Account account = SessionUtil.getAccountBySession(request);
 
-    }
-
-    @Override
-    @ValidCheck
-    public void updateCrawlerKeyword(HttpServletRequest request) {
-
-    }
-
-    @Override
-    @ValidCheck
-    public void updateCrawlerApi(HttpServletRequest request) {
-
-    }
-
-    @Override
-    @ValidCheck
-    public void removeCrawlerKeyword(HttpServletRequest request) {
-
-    }
-
-    @Override
-    public void removeCrawlerApi(HttpServletRequest request) {
-
-    }
-
-    public Account getAccountBySession(HttpServletRequest request) {
-        //Note API User Session 체크
-        String accessToken = HttpHeaderUtil.getExtractBearerToken(request);
-        SessionTokenDto sessionTokenDto = redisCacheService.getValue(RedisCacheKeyDefine.getAccessTokenKey(accessToken), SessionTokenDto.class);
-        if (Objects.isNull(sessionTokenDto)) {
-            log.error("Not found session. accessToken: {}", accessToken);
-            throw new CommonException(CommonErrorMessage.INVALID_ACCESS_TOKEN);
+        //Note CrawlerApi의 경우 Admin 작업.
+        if (!account.getAccountRole().equals(AccountRoleType.ADMIN)) {
+            log.error("CrawlerAPI Setting is Only Admin Role. account_id: {}, name: {}",
+                account.getUserId(), account.getUserName());
+            throw new CommonException(CommonErrorMessage.FORBIDDEN);
         }
 
-        //Note 유저 Account_ID 기준으로 해당 유저 데이터 정보 조회. (Session을 받았지만 DB에 데이터 없는걸 방지하기 위함)
-        Map<String, Object> additional = sessionTokenDto.getAdditionalInformation();
-        Long accountId = (Long) additional.getOrDefault(AdditionalInformation.USN.getName(), null);
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> {
-                    log.error("Not found account Id. USN: {}", accountId);
-                    return new CommonException(CommonErrorMessage.UNKNOWN_USN);
-                });
-        return account;
+        Boolean isExist = crawlerApiRepository.existsCrawlerApiBySiteName(
+            param.getSiteName().name());
+        if (isExist) {
+            log.error("Duplicate create request. site_name:{}, url:{}", param.getSiteName(),
+                param.getUrl());
+            throw new CommonException(CommonErrorMessage.DUPLICATE_REQUEST);
+        }
+
+        CrawlerSite result = crawlerApiRepository.save(
+            CrawlerSite.builder()
+                .siteName(param.getSiteName().name())
+                .url(param.getUrl())
+                .header(param.getRequestHeader())
+                .body(param.getRequestBody().toString())
+                .build()
+        );
+
+        return CrawlerApiCreateResponse.of(result);
+    }
+
+    @Override
+    @ValidCheck
+    public void modifyCrawlerKeyword(HttpServletRequest request, CrawlerModifyRequest param) {
+        // Note Session 체크
+        Account account = SessionUtil.getAccountBySession(request);
+
+        Crawler crawler = crawlerRepository.findById(param.getCrawlerId())
+            .map(data -> {
+                data.setCrawlerSiteId(param.getNewsSite().getValue());
+                data.setKeyWord(param.getKeyword());
+                data.setDuration(param.getDuration());
+                return crawlerRepository.save(data);
+            })
+            .orElseThrow(() -> {
+                log.error("Not found crawler data. crawler_id: {}", param.getCrawlerId());
+                return new CommonException(CommonErrorMessage.NOT_FOUND);
+            });
+
+    }
+
+    @Override
+    @ValidCheck
+    public CrawlerApiModifyResponse modifyCrawlerSite(HttpServletRequest request,
+        CrawlerSiteModifyRequest param) {
+        // Note Session 체크
+        Account account = SessionUtil.getAccountBySession(request);
+
+        //Note CrawlerApi의 경우 Admin 작업.
+        if (!account.getAccountRole().equals(AccountRoleType.ADMIN)) {
+            log.error("CrawlerAPI Setting is Only Admin Role. account_id: {}, name: {}",
+                account.getUserId(), account.getUserName());
+            throw new CommonException(CommonErrorMessage.FORBIDDEN);
+        }
+
+        CrawlerSite crawlerSite = crawlerApiRepository.getCrawlerBySite(param.getSiteName());
+        if (Objects.isNull(crawlerSite)) {
+            log.error("Not found crawler api data. param: {}", param);
+            throw new CommonException(CommonErrorMessage.INVALID_PARAM);
+        }
+        CrawlerSite beforeData = crawlerSite;
+
+        crawlerSite.setUrl(param.getUrl());
+        crawlerSite.setBody(param.getRequestBody().toString());
+        crawlerSite.setHeader(param.getRequestHeader());
+        crawlerSite = crawlerApiRepository.save(crawlerSite);
+
+        Boolean logResult = saveCrawlerApiLog(beforeData, crawlerSite);
+        //TODO log Result Error처리?
+
+        return CrawlerApiModifyResponse.of(crawlerSite);
+
+
+    }
+
+    @Override
+    @ValidCheck
+    public void removeCrawlerKeyword(HttpServletRequest request, Long crawlerId) {
+        // Note Session 체크
+        Account account = SessionUtil.getAccountBySession(request);
+
+        Crawler crawler = crawlerRepository.findById(crawlerId)
+            .orElseThrow(() -> {
+                log.error("Not found crawler data. crawler_id: {}", crawlerId);
+                return new CommonException(CommonErrorMessage.NOT_FOUND);
+            });
+
+        crawlerRepository.delete(crawler);
+
+    }
+
+    @Override
+    @ValidCheck
+    public void removeCrawlerSite(HttpServletRequest request, Long crawlerApiId) {
+        // Note Session 체크
+        Account account = SessionUtil.getAccountBySession(request);
+
+        //Note CrawlerApi의 경우 Admin 작업.
+        if (!account.getAccountRole().equals(AccountRoleType.ADMIN)) {
+            log.error("CrawlerAPI Setting is Only Admin Role. account_id: {}, name: {}",
+                account.getUserId(), account.getUserName());
+            throw new CommonException(CommonErrorMessage.FORBIDDEN);
+        }
+
+        CrawlerSite crawlerSite = crawlerApiRepository.findById(crawlerApiId)
+            .orElseThrow(() -> {
+                log.error("Not found crawler api data. crawler_api_id: {}", crawlerApiId);
+                return new CommonException(CommonErrorMessage.NOT_FOUND);
+            });
+
+        crawlerApiRepository.delete(crawlerSite);
+
+        saveCrawlerApiLog(crawlerSite, null);
+    }
+
+    public Boolean saveCrawlerApiLog(CrawlerSite beforeData, CrawlerSite afterData) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            crawlerApiLogRepository.save(CrawlerSiteLog.builder()
+                .beforeData(mapper.writeValueAsString(beforeData))
+                .afterData(mapper.writeValueAsString(afterData))
+                .crawlerApiId(beforeData.getId())
+                .build());
+        } catch (Exception e) {
+            log.error("Failed to save repository log data. before:{},after:{}", beforeData,
+                afterData);
+            throw new CommonException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+        }
+        return true;
     }
 }

@@ -16,11 +16,11 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "crawler_api_mt")
-public class CrawlerApi {
+@Table(name = "crawler_site_mt")
+public class CrawlerSite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "crawler_api_mt_id")
+    @Column(name = "crawler_site_mt_id")
     Long Id;
 
     @Size(max = 20)

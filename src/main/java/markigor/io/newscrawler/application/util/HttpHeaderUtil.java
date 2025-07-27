@@ -1,16 +1,16 @@
 package markigor.io.newscrawler.application.util;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import markigor.io.newscrawler.application.model.exception.CommonErrorMessage;
 import markigor.io.newscrawler.application.model.exception.CommonException;
 
-import java.util.Optional;
-
 @Slf4j
 @UtilityClass
 public class HttpHeaderUtil {
+
     private static final String UNKNOWN = "Unknown";
     private static final String OTHER = "Other";
 
@@ -45,9 +45,10 @@ public class HttpHeaderUtil {
 
     public String getIp(HttpServletRequest request) {
         final String[] forwardedFor = Optional.ofNullable(request.getHeader("X-Forwarded-For"))
-                .map(x -> x.split(",")).orElseGet(() -> new String[]{});
-        if (forwardedFor.length > 0)
+            .map(x -> x.split(",")).orElseGet(() -> new String[]{});
+        if (forwardedFor.length > 0) {
             return forwardedFor[0];
+        }
         return request.getRemoteAddr();
     }
 

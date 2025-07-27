@@ -24,8 +24,8 @@ public class Crawler extends BaseEntity {
     @Column(name = "crawler_mt_id")
     Long Id;
 
-    @Column(name = "crawler_api_mt_id")
-    Long crawlerApiId;
+    @Column(name = "crawler_site_mt_id")
+    Long crawlerSiteId;
 
     @Size(max = 50)
     @Column(name = "key_word", length = 50)

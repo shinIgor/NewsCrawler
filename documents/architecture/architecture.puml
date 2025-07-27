@@ -1,0 +1,17 @@
+@startuml
+database "DB1" as DB1
+database "DB2" as DB2
+database "DB3" as DB3
+
+rectangle "B.E Service A\n(ETL Writer)" as BE_A
+rectangle "B.E Service B\n(Data Scraper)" as BE_B
+cloud "Hadoop" as Hadoop
+
+DB1 --> BE_A : 데이터 수집
+DB2 --> BE_A : 데이터 수집
+DB3 --> BE_A : 데이터 수집
+
+BE_A --> Hadoop : 전처리 후 적재
+Hadoop --> BE_B : 분석용 데이터 스크랩
+
+@enduml

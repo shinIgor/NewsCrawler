@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "crawler_api_lt")
-public class CrawlerApiLog {
+@Table(name = "crawler_site_lt")
+public class CrawlerSiteLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "crawler_api_lt_id")
+    @Column(name = "crawler_site_lt_id")
     Long Id;
 
-    @Column(name = "crawler_api_mt_id")
+    @Column(name = "crawler_site_mt_id")
     Long crawlerApiId;
 
     @Column(name = "before_data")

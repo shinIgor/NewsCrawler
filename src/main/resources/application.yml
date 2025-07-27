@@ -2,6 +2,9 @@ application:
   timezone: UTC
   locale: en
 
+app:
+  host:
+    naver: https://openapi.naver.com/v1/search/news.json
 
 spring:
   application:
@@ -24,11 +27,14 @@ spring:
   datasource:
     news:
       name: NEWS-CRAWLER
-#      driver-class-name: software.aws.rds.jdbc.mysql.Driver
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url :
-      username:
-      password:
+      jdbc-url: jdbc:mysql://192.168.219.116:3306/news_crawler?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&cacheCallableStmts=true&autoReconnect=true&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true
+      username: news_crawler
+      password: news_crawler
+      #      driver-class-name: software.aws.rds.jdbc.mysql.Driver
+      #      jdbc-url :
+      #      username:
+      #      password:
       connection-test-query: SELECT 1
       minimum-idle: 5
       maximum-pool-size: 5
@@ -41,5 +47,5 @@ spring:
 debug: false
 logging:
   level:
-    root: info
+    root: debug
 

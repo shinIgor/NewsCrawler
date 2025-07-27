@@ -7,6 +7,7 @@ import markigor.io.newscrawler.application.model.transfer.Response.RegisterAccou
 import markigor.io.newscrawler.application.model.transfer.Response.TokenResponse;
 
 public interface AuthService {
+
     RegisterAccountResponse registerNewAccount(RegisterAccountRequest param);
 
     TokenResponse loginAccount(HttpServletRequest request, LoginAccountRequest param);

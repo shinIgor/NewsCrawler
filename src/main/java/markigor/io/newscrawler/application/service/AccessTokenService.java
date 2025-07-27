@@ -6,6 +6,7 @@ import markigor.io.newscrawler.application.model.transfer.Response.TokenResponse
 
 
 public interface AccessTokenService {
+
     TokenResponse createAccessToken(HttpServletRequest request, Account account);
 
     TokenResponse refreshToken(HttpServletRequest request, String refreshTokenValue);

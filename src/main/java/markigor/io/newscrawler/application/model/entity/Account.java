@@ -1,13 +1,23 @@
 package markigor.io.newscrawler.application.model.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import markigor.io.newscrawler.application.model.entity.convert.AccountRoleTypeConverter;
 import markigor.io.newscrawler.application.model.type.AccountRoleType;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,6 +28,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "account_ut")
 public class Account extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_ut_id")
@@ -35,7 +46,7 @@ public class Account extends BaseEntity {
     @Column(name = "user_name", length = 10)
     String userName;
 
-    @Convert(converter = AccountRoleType.class)
+    @Convert(converter = AccountRoleTypeConverter.class)
     @Column(name = "account_role")
     AccountRoleType accountRole;
 

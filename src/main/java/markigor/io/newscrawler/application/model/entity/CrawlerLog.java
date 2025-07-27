@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "crawler_lt")
+@Table(name = "crawler_site_lt")
 public class CrawlerLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

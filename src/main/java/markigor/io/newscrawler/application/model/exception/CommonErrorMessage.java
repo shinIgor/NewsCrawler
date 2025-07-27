@@ -14,6 +14,7 @@ public enum CommonErrorMessage implements BaseErrorMessage {
 
     INVALID_PARAM(400, "Invalid Parameter", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(400, "Invalid Password", HttpStatus.BAD_REQUEST),
+    DUPLICATE_REQUEST(400, "Duplicate Request", HttpStatus.BAD_REQUEST),
 
 
     BAD_REQUEST(400, "Bad request.", HttpStatus.BAD_REQUEST),
