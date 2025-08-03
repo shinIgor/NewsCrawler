@@ -15,8 +15,6 @@ COPY src ./src
 # --no-daemon 옵션으로 데몬 없이 빌드하여 컨테이너 환경에 최적화
 RUN ./gradlew build --no-daemon
 
----
-
 # 실행 스테이지
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
