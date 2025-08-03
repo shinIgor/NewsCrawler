@@ -22,7 +22,7 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # 확인 후 정확한 JAR 파일 이름으로 수정합니다.
-COPY --from=build /app/build/libs/NewsCrawler-1.0.0-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/NewsCrawler-0.0.1-SNAPSHOT.jar app.jar
 
 # 애플리케이션이 사용할 포트 노출
 EXPOSE 18080
