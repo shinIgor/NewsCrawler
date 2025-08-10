@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: newscrawler
-          image: your-dockerhub-username/newscrawler:latest
+          image: markigor/newscrawler:latest
           ports:
             - containerPort: 18080
