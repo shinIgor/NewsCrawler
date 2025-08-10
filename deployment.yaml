@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newscrawler
+  labels:
+    app: newscrawler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newscrawler
+  template:
+    metadata:
+      labels:
+        app: newscrawler
+    spec:
+      containers:
+        - name: newscrawler
+          image: your-dockerhub-username/newscrawler:latest
+          ports:
+            - containerPort: 18080
